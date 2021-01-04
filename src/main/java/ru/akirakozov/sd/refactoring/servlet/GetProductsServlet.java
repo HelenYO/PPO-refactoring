@@ -23,14 +23,14 @@ public class GetProductsServlet extends HttpServlet {
             try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
                 Statement stmt = c.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT");
-                body.append("<html><body>\n");
-
                 while (rs.next()) {
-                    String  name = rs.getString("name");
-                    int price  = rs.getInt("price");
+                    String name = rs.getString("name");
+                    int price = rs.getInt("price");
                     body.append(name).append("\t").append(price).append("</br>\n");
                 }
-                body.append("</body></html>");
+                if (body.length() >= 1 && body.charAt(body.length() - 1) == '\n') {
+                    body.deleteCharAt(body.length() - 1);
+                }
 
                 rs.close();
                 stmt.close();
@@ -39,6 +39,7 @@ public class GetProductsServlet extends HttpServlet {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        ResponseMaker.okResponse(response, body.toString());
+        String res = ResponseMaker.funcResponse("", Boolean.FALSE, body.toString());
+        ResponseMaker.okResponse(response, res);
     }
 }
