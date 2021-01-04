@@ -15,15 +15,9 @@ import java.sql.Statement;
  */
 public class AddProductServlet extends HttpServlet {
 
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String name = request.getParameter("name");
-        long price = Long.parseLong(request.getParameter("price"));
-
+    private void update(String sql) {
         try {
             try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
-                String sql = "INSERT INTO PRODUCT " +
-                        "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")";
                 Statement stmt = c.createStatement();
                 stmt.executeUpdate(sql);
                 stmt.close();
@@ -31,7 +25,16 @@ public class AddProductServlet extends HttpServlet {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
 
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String name = request.getParameter("name");
+        long price = Long.parseLong(request.getParameter("price"));
+
+        String sql = "INSERT INTO PRODUCT " +
+                "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")";
+        update(sql);
         ResponseMaker.okResponse(response, "OK");
     }
 }

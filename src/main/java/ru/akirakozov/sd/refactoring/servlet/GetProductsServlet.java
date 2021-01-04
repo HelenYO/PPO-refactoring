@@ -16,13 +16,12 @@ import java.sql.Statement;
  */
 public class GetProductsServlet extends HttpServlet {
 
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private String query(String sql) {
         StringBuilder body = new StringBuilder();
         try {
             try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
                 Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT");
+                ResultSet rs = stmt.executeQuery(sql);
                 while (rs.next()) {
                     String name = rs.getString("name");
                     int price = rs.getInt("price");
@@ -39,7 +38,13 @@ public class GetProductsServlet extends HttpServlet {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        String res = ResponseMaker.funcResponse("", Boolean.FALSE, body.toString());
+        return ResponseMaker.funcResponse("", Boolean.FALSE, body.toString());
+    }
+
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String sql = "SELECT * FROM PRODUCT";
+        String res = query(sql);
         ResponseMaker.okResponse(response, res);
     }
 }
